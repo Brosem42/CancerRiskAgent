@@ -1,5 +1,4 @@
-# imports 
-# imports 
+# imports  
 # # load dotenv + imports for retriever tool
 import os
 from dotenv import load_dotenv
@@ -14,7 +13,7 @@ from vertexai.language_models import TextEmbeddingModel
 from langchain_core.runnables import Runnable
 
 #helper import
-from RAG.citations import format_sources_with_citations, infer_page_from_text
+from .citations import format_sources_with_citations, infer_page_from_text
 
 import os
 from dotenv import load_dotenv
