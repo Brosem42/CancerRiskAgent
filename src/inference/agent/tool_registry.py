@@ -47,7 +47,7 @@ def retrieve_guideline_evidence(query: str, top_k: int=8) -> List[Dict[str, Any]
 GET_PATIENT_DECL = FunctionDeclaration(
     name="get_patient",
     description="Fetch and retrieve structured patient data from patients.json by patient_id.",
-    params={
+    parameters={
         "type": "object",
         "properties": {
             "patient_id": {"type": "string", "description": "Unique patient identifier"}
@@ -60,7 +60,7 @@ GET_PATIENT_DECL = FunctionDeclaration(
 RETRIEVE_EVIDENCE_DECL = FunctionDeclaration(
     name="retrieve_guideline_evidence",
     description="Retrieve relevant guideline text chunks from NG12 Chroma DB for a given query.",
-    params={
+    parameters={
         "type": "object",
         "properties": {
             "query": {"type": "string", "description": "Search query"},
