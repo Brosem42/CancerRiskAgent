@@ -79,7 +79,7 @@ RETRIEVE_EVIDENCE_DECL = FunctionDeclaration(
 
 
 VERTEX_TOOLS = [
-    Tool(function_decl=[GET_PATIENT_DECL, RETRIEVE_EVIDENCE_DECL])
+    Tool(function_declarations=[GET_PATIENT_DECL, RETRIEVE_EVIDENCE_DECL])
 ]
 
 #implement execution map
