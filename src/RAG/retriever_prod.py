@@ -140,6 +140,13 @@ if __name__ == "__main__":
     print(f"CHROMA_PATH =", CHROMA_PATH)
     print("collection count =", vectorstore._collection.count())
     question = "Based on this patient data provided, what type of referral is required for patient care?--data:'{\"patient_id\": \"PT-103\", \"name\": \"Robert Brown\", \"age\": \"45\", \"gender\": \"Male\", \"smoking_history\": \"Ex-Smoker\", \"symptoms\": [\"persistent cough\", \"shortness of breath\"], \"symptom_duration_days\": 28}'"
+    docs = retrieve_docs(question, top_k=5)
+    print
+    ("Retrieved docs:", len(docs))
+    if docs:
+        print(docs[0].metadata)
+        print(docs[0].page_content[:300])
+        
     response = generated_attributed_response(question)
     print(response)
 
