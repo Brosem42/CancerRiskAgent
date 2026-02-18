@@ -40,11 +40,24 @@ def assess_patient(patient_id: str, top_k: int=8) -> Dict[str, Any]:
 Assess this patient-000 based on NCIE NG12 The National Institute for Health and Care Excellence (NICE) Guideline for Suspected cancer: recognition and referral NICE guideline.
 
 Step 1: Call get_patient with patient_id="{patient_id}".
-Step 2: Create a search query from the patient's age + sysmptoms + risk factors.
+Step 2: From the returned patient fields (age, smoking_history, symptoms, symptom_duration_days),
+compose a retrieval query that includes:
+- the main symptom phrases (exact strings in symptoms)
+- age (e.g., "age 60" or "60 years")
+- smoking_history when relevant (e.g., "never smoked", "ex-smoker")
+- duration when relevant (e.g., "2 days", "28 days")
+
 Step 3: Call retrieve_guideline_evidence with that query and top_k={top_k}.
 Step 4: Decide: If status requires an Urgent Referral or Non-urgent vs Not Met/Insufficient Evidence.
 Step 5: Once, patient referral status decided, determine post-referral instructions that correspond to the most relevant medical imaging exam to be ordered, factor in cost-effectiveness.
-Step 5: Return JSON with citations from the evidence excerpts.
+Step 6: Return JSON ONLY with keys:
+patient_id, decision, rationale, citations. 
+Citations rules:
+- citations is a list of objects: {{source, page, excerpt}}
+- Every clinical claim in rationale must be supported by at least one citation excerpt
+- If evidence is insufficient, say so and choose "Not Met / Insufficient Evidence".
+
+Return JSON only, no markdown.
 """.strip()
     
     raw = run_tool_calling(

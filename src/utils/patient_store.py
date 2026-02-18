@@ -49,5 +49,5 @@ def get_patient(patient_id: str) -> Dict[str: Any]:
         "gender": patient.get("gender"),
         "smoking_history": patient.get("smoking_history"),
         "symptoms": symptoms,
-        "symptom_duration_days": duration,
+        "symptom_duration_days": duration
         }
