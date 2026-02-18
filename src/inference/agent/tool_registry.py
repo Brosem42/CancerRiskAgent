@@ -8,11 +8,11 @@ from src.utils.patient_store import get_patient
 from src.RAG.retriever_prod import retrieve_docs
 
 
-def _expand_query(query: str) -> str:
+def expand_query(query: str) -> str:
     q = (query or "").lower()
 
     expansions: List[str] = []
-    # US/UK spelling + lay phrasing
+    # pelling + phrasing
     if "haematuria" in q or "hematuria" in q or "blood in urine" in q:
         expansions += [
             "hematuria", "haematuria", "visible haematuria", "visible hematuria",
@@ -32,19 +32,16 @@ def _expand_query(query: str) -> str:
 
 
 def retrieve_guideline_evidence(query: str, top_k: int = 8) -> List[Dict[str, Any]]:
-    query2 = _expand_query(query)
+    query2 = expand_query(query)
     docs = retrieve_docs(query2, top_k=top_k)
-
-    # ✅ debug (leave on while validating; remove later if you want)
-    print(f"[retrieve_guideline_evidence] query='{query2}' -> {len(docs)} docs")
 
     output: List[Dict[str, Any]] = []
     for d in docs:
         md = dict(d.metadata or {})
 
         text = (d.page_content or "").strip()
-        if len(text) > 700:
-            text = text[:700].rstrip() + "…"
+        if len(text) > 800:
+            text = text[:800].rstrip() + "…"
 
         page = md.get("page", None)
         try:
@@ -82,14 +79,20 @@ RETRIEVE_EVIDENCE_DECL = FunctionDeclaration(
         "type": "object",
         "properties": {
             "query": {"type": "string"},
-            "top_k": {"type": "integer", "minimum": 1, "maximum": 20},
+            "top_k": {
+                "type": "integer", 
+                "minimum": 1, 
+                "maximum": 20,
+                "default": 8
+                },
         },
         "required": ["query"],
         "additionalProperties": False,
     },
 )
 
-VERTEX_TOOLS = [Tool(function_declarations=[GET_PATIENT_DECL, RETRIEVE_EVIDENCE_DECL])]
+VERTEX_TOOLS = [
+    Tool(function_declarations=[GET_PATIENT_DECL, RETRIEVE_EVIDENCE_DECL])]
 
 TOOL_EXECUTORS: Dict[str, Callable[..., Any]] = {
     "get_patient": get_patient,
