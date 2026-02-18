@@ -53,7 +53,7 @@ GET_PATIENT_DECL = FunctionDeclaration(
             "patient_id": {"type": "string", "description": "Unique patient identifier"}
         },
         "required": ["patient_id"],
-        "addionalProperties": False
+        "additionalProperties": False
     }
 )
 
@@ -73,7 +73,7 @@ RETRIEVE_EVIDENCE_DECL = FunctionDeclaration(
             }, 
         },
         "required": ["query"],
-        "addionalProperties": False
+        "additionalProperties": False
     },
 )
 
