@@ -13,7 +13,7 @@ from typing import Any, Dict
 
 _CODE_FENCE_RE = re.compile(r"^```(?:json)?\s*|\s*```$", re.IGNORECASE)
 
-def _strip_code_fences(text: str) -> str:
+def strip_code_fences(text: str) -> str:
     """
     Removes leading/trailing triple-backtick fences (``` or ```json).
     """
@@ -43,6 +43,16 @@ assessor_system_prompt = """
 
 """.strip()
 
+FENCE_RE = re.compile(r"^```(?:json)?\s*|\s*```$", re.IGNORECASE)
+JSON_OBJ_RE = re.compile(r"\{.*\}", re.DOTALL)
+
+def clean_json_text(text: str) -> str:
+    if not text:
+       return text
+    t = text.strip()
+    t = FENCE_RE.sub("", t).strip()
+    match = JSON_OBJ_RE.search(t)
+    return match.group(0).strip() if match else t
 
 # how to correctly assess the status of the patient 
 def assess_patient(patient_id: str, top_k: int=8) -> Dict[str, Any]:
@@ -51,15 +61,16 @@ def assess_patient(patient_id: str, top_k: int=8) -> Dict[str, Any]:
     """
     model = get_model()
     user_prompt = f"""
-Assess this patient-000 based on NCIE NG12 The National Institute for Health and Care Excellence (NICE) Guideline for Suspected cancer: recognition and referral NICE guideline.
+Assess this patient based on NCIE NG12 The National Institute for Health and Care Excellence (NICE) Guideline for Suspected cancer: recognition and referral NICE guideline.
 
 Step 1: Call get_patient with patient_id="{patient_id}".
-Step 2: From the returned patient fields (age, smoking_history, symptoms, symptom_duration_days),
+Step 2: From the returned patient fields (age, smoking_history, symptoms, symptom_duration_days, etc.)
 compose a retrieval query that includes:
-- the main symptom phrases (exact strings in symptoms)
-- age (e.g., "age 60" or "60 years")
-- smoking_history when relevant (e.g., "never smoked", "ex-smoker")
-- duration when relevant (e.g., "2 days", "28 days")
+- the main symptom phrases
+- age 
+- smoking_history when relevant 
+- duration when relevant 
+- referral type when relevant
 
 Step 3: Call retrieve_guideline_evidence with that query and top_k={top_k}.
 Step 4: Decide: If status requires an Urgent Referral or Non-urgent vs Not Met/Insufficient Evidence.
@@ -67,9 +78,9 @@ Step 5: Once, patient referral status decided, determine post-referral instructi
 Step 6: Return JSON ONLY with keys:
 patient_id, decision, rationale, citations. 
 Citations rules:
-- citations is a list of objects: {{source, page, excerpt}}
-- Every clinical claim in rationale must be supported by at least one citation excerpt
-- If evidence is insufficient, say so and choose "Not Met / Insufficient Evidence".
+- citations will be a list of objects: {{main source, page, excerpt}}
+- Every clinical claim in rationale must be supported by at least one or more citation excerpts
+- If you are unable to find evidence, say so and choose "Insufficient Evidence".
 
 Return JSON only, no markdown.
 """.strip()
@@ -78,11 +89,17 @@ Return JSON only, no markdown.
         model=model,
         system_instructions=assessor_system_prompt,
         user_prompt=user_prompt,
-        allowed_tools=["get_patient", "retrieve_guideline_evidence"],
-        max_steps=6
+        allowed_tools=["get_patient",
+                       "normalize_symptoms",
+                       "build_retrieval_query",
+                       "retrieve_guideline_evidence",
+                       "evaluate_referral_criteria",
+                       "extract_citations",
+                       "recommend_imaging"
+                       ],
+        max_steps=20
     )
-    cleaned = _strip_code_fences(raw)
-
+    cleaned = clean_json_text(raw)
     try:
         return json.loads(cleaned)
     except Exception as e:
