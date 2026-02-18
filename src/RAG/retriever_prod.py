@@ -82,11 +82,6 @@ retriever = vectorstore.as_retriever(
 )
 
 def retrieve_docs(query: str, top_k: int = 8):
-    """
-    Tool entry point: returns LangChain Document objects.
-    Uses MMR retrieval against my continuous/persisted Chroma vectorstore.
-    """
-    # Use vectorstore method so top_k can be dynamic
     return vectorstore.max_marginal_relevance_search(
         query,
         k=top_k,
