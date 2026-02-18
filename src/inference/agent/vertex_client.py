@@ -10,7 +10,7 @@ def init_vertex() -> None:
     Init Vertex AI client. Uses ENV vars if set.
     """
     project = os.getenv("GOOGLE_CLOUD_PROJECT") or os.getenv("GCLOUD_PROJECT")
-    location = os.getenve("GOOGLE_CLOUD_LOCATION", "us-east4")
+    location = os.getenv("GOOGLE_CLOUD_LOCATION", "us-east4")
 
     if not project:
         raise RuntimeError("GOOGLE_CLOUD_PROJECT (OR GCLOUD_PROJECT) is not set.")
