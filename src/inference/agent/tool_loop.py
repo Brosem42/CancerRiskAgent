@@ -123,7 +123,7 @@ USER REQUEST:
                 parts=[
                     Part.from_function_response(
                         name=func_name,
-                        response=result
+                        response={"result": result}
                     )
                 ],
             )
