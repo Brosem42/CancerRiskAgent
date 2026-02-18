@@ -48,6 +48,8 @@ def _build_retrieval_query(patient: Dict[str, Any]) -> str:
     parts: List[str] = []
     if age is not None:
         parts.append(f"age {age}")
+        parts.append(f"{age} years")
+        parts.append(f"{age} year old")
     if smoking:
         parts.append(smoking)
     if dur is not None:
