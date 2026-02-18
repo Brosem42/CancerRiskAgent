@@ -1,4 +1,5 @@
 # src/inference/agent/tool_loop.py
+# src/inference/agent/tool_loop.py
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Tuple
@@ -42,13 +43,16 @@ def run_tool_calling(
     system_instructions: str,
     user_prompt: str,
     allowed_tools: Optional[List[str]] = None,
-    max_steps: int = 6,
+    max_steps: int = 8,
 ) -> str:
     """
-    Vertex function-calling loop compatible with SDKs that DO NOT support role="system"
-    and DO NOT support system_instruction kwarg.
+    Vertex function-calling loop.
 
-    We prepend system_instructions into the first user message.
+    Important constraints in your environment:
+    - role="system" Content is NOT supported
+    - system_instruction kwarg is NOT supported
+
+    So we prepend system instructions into the first user message.
     """
 
     tool_config = ToolConfig(
@@ -58,7 +62,6 @@ def run_tool_calling(
         )
     )
 
-    # IMPORTANT: no role="system" Content (unsupported in your environment)
     combined_prompt = f"""INSTRUCTIONS (follow strictly):
 {system_instructions}
 
@@ -82,15 +85,24 @@ USER REQUEST:
             return extract_text(response)
 
         func_name, func_args = func_call
+
         if func_name not in TOOL_EXECUTORS:
             raise RuntimeError(f"Unknown tool requested: {func_name}")
 
+        # 1) Append the model's function_call message to history
+        #    (this is required so the model "remembers" it called the tool)
+        candidates = getattr(response, "candidates", None) or []
+        if candidates and getattr(candidates[0], "content", None) is not None:
+            contents.append(candidates[0].content)
+
+        # 2) Execute tool
         result = TOOL_EXECUTORS[func_name](**func_args)
 
-        # Send tool output back to model
+        # 3) Append function response as *user* content
+        #    (Vertex examples use role="user" for function_response parts)
         contents.append(
             Content(
-                role="model",
+                role="user",
                 parts=[
                     Part.from_function_response(
                         name=func_name,
