@@ -13,8 +13,8 @@ from vertexai.evaluation import EvalTask
 from vertexai.language_models import TextEmbeddingModel
 from langchain_core.runnables import Runnable
 
-
-
+#helper import
+from RAG.citations import format_sources_with_citations, infer_page_from_text
 
 import os
 from dotenv import load_dotenv
@@ -73,18 +73,6 @@ retriever = vectorstore.as_retriever(
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-#retrieval-augmented generation (RAG) chain
-# attrbution
-import re
-_PAGE_RE = re.compile(r"Page\s+(\d+)\s+of\s+(\d+)", re.IGNORECASE)
-
-def infer_page_from_text(text: str):
-    match = _PAGE_RE.search(text)
-    if not match:
-        return None
-    return int(match.group())
-
-
 attribution_prompt = ChatPromptTemplate.from_template(
     """ You are a precise and accurate clinical AI assistant that provides expert knowledge in
     clinical decision-making support for those who encounter direct patient care.
@@ -114,30 +102,6 @@ attribution_prompt = ChatPromptTemplate.from_template(
     Your answer:
     """
 )
-
-# SOURCE formatting 
-#source formatted strings from documents
-def format_sources_with_citations(documents):
-    formatted_sources = []
-    for i, doc in enumerate(documents, 1):
-        source_info = doc.metadata.get('source', 'Unknown source')
-
-        page = doc.metadata.get("page", None)
-
-        if page is None:
-            page = infer_page_from_text(doc.page_content)
-
-        page_str = ""
-        if page is not None:
-            try:
-                page_str = f", page {int(page)}"
-            except Exception:
-                page_str = f", page {page}"
-
-        header = f"[{i} {source_info}{page_str}]"
-        formatted_sources.append(f"{header}\n{doc.page_content}")
-    return "\n\n".join(formatted_sources)
-    
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 
