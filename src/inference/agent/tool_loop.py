@@ -73,7 +73,7 @@ def run_tool_calling(
             if not types:
                 return ""
             parts = types[0].content.parts or []
-            text_output = "".join([getattr(p, "text", "") or "" for part in parts]).strip()
+            text_output = "".join([getattr(part, "text", "") or "" for part in parts]).strip()
             return text_output
         
 
