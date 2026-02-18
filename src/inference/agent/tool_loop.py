@@ -9,10 +9,6 @@ from src.inference.agent.tool_registry import TOOL_EXECUTORS, VERTEX_TOOLS
 
 
 def find_function_call(response) -> Optional[Tuple[str, Dict[str, Any]]]:
-    """
-    Detect a function call in the model response.
-    Returns (function_name, args_dict) or None.
-    """
     candidates = getattr(response, "candidates", None) or []
     if not candidates:
         return None
@@ -31,9 +27,6 @@ def find_function_call(response) -> Optional[Tuple[str, Dict[str, Any]]]:
 
 
 def extract_text(response) -> str:
-    """
-    Extract plain text from model response.
-    """
     candidates = getattr(response, "candidates", None) or []
     if not candidates:
         return ""
@@ -52,19 +45,29 @@ def run_tool_calling(
     max_steps: int = 6,
 ) -> str:
     """
-    Vertex function-calling loop compatible with current SDK.
+    Vertex function-calling loop compatible with SDKs that DO NOT support role="system"
+    and DO NOT support system_instruction kwarg.
+
+    We prepend system_instructions into the first user message.
     """
 
     tool_config = ToolConfig(
         function_calling_config=ToolConfig.FunctionCallingConfig(
-            mode=ToolConfig.FunctionCallingConfig.Mode.ANY,  # IMPORTANT
+            mode=ToolConfig.FunctionCallingConfig.Mode.ANY,
             allowed_function_names=allowed_tools or list(TOOL_EXECUTORS.keys()),
         )
     )
 
+    # IMPORTANT: no role="system" Content (unsupported in your environment)
+    combined_prompt = f"""INSTRUCTIONS (follow strictly):
+{system_instructions}
+
+USER REQUEST:
+{user_prompt}
+""".strip()
+
     contents: List[Content] = [
-        Content(role="system", parts=[Part.from_text(system_instructions)]),
-        Content(role="user", parts=[Part.from_text(user_prompt)]),
+        Content(role="user", parts=[Part.from_text(combined_prompt)]),
     ]
 
     for _ in range(max_steps):
@@ -75,13 +78,10 @@ def run_tool_calling(
         )
 
         func_call = find_function_call(response)
-
-        # ---- Final answer (no tool call)
         if not func_call:
             return extract_text(response)
 
         func_name, func_args = func_call
-
         if func_name not in TOOL_EXECUTORS:
             raise RuntimeError(f"Unknown tool requested: {func_name}")
 
