@@ -104,11 +104,12 @@ USER REQUEST:
             return extract_text(response)
 
         func_name, func_args = func_call
+        print(f"[tool_call] {func_name} args={func_args}")
 
         if func_name not in TOOL_EXECUTORS:
             raise RuntimeError(f"Unknown tool requested: {func_name}")
 
-        # Append the model's tool call content (important)
+        # Append the model's tool call 
         candidates = getattr(response, "candidates", None) or []
         if candidates and getattr(candidates[0], "content", None) is not None:
             contents.append(candidates[0].content)
@@ -116,10 +117,10 @@ USER REQUEST:
         # Execute tool
         result = TOOL_EXECUTORS[func_name](**func_args)
 
-        # Append tool result back (use role="user" for function_response)
+        # vertex needs response payload to be obj
         contents.append(
             Content(
-                role="user",
+                role="model",
                 parts=[
                     Part.from_function_response(
                         name=func_name,
