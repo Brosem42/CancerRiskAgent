@@ -1,4 +1,4 @@
-# src/inference/agent/tool_loop.py
+
 # src/inference/agent/tool_loop.py
 from __future__ import annotations
 
@@ -43,16 +43,16 @@ def run_tool_calling(
     system_instructions: str,
     user_prompt: str,
     allowed_tools: Optional[List[str]] = None,
-    max_steps: int = 8,
+    max_steps: int = 10,
 ) -> str:
     """
-    Vertex function-calling loop.
+    Vertex function-calling loop compatible with your SDK constraints:
+    - No system role Content
+    - No system_instruction kwarg
+    - If restricting tools, must use Mode.ANY
 
-    Important constraints in your environment:
-    - role="system" Content is NOT supported
-    - system_instruction kwarg is NOT supported
-
-    So we prepend system instructions into the first user message.
+    This version also prevents infinite tool loops by forcing a final
+    non-tool answer on the last step.
     """
 
     tool_config = ToolConfig(
@@ -73,7 +73,26 @@ USER REQUEST:
         Content(role="user", parts=[Part.from_text(combined_prompt)]),
     ]
 
-    for _ in range(max_steps):
+    for step in range(max_steps):
+        last_step = (step == max_steps - 1)
+
+        # On the last step, DISABLE tools and force a final answer
+        if last_step:
+            contents.append(
+                Content(
+                    role="user",
+                    parts=[
+                        Part.from_text(
+                            "Finalize now using the tool results already provided above. "
+                            "Do NOT call any tools. Return the final answer."
+                        )
+                    ],
+                )
+            )
+            response = model.generate_content(contents=contents)
+            return extract_text(response)
+
+        # Normal tool-enabled step
         response = model.generate_content(
             contents=contents,
             tools=VERTEX_TOOLS,
@@ -89,17 +108,15 @@ USER REQUEST:
         if func_name not in TOOL_EXECUTORS:
             raise RuntimeError(f"Unknown tool requested: {func_name}")
 
-        # 1) Append the model's function_call message to history
-        #    (this is required so the model "remembers" it called the tool)
+        # Append the model's tool call content (important)
         candidates = getattr(response, "candidates", None) or []
         if candidates and getattr(candidates[0], "content", None) is not None:
             contents.append(candidates[0].content)
 
-        # 2) Execute tool
+        # Execute tool
         result = TOOL_EXECUTORS[func_name](**func_args)
 
-        # 3) Append function response as *user* content
-        #    (Vertex examples use role="user" for function_response parts)
+        # Append tool result back (use role="user" for function_response)
         contents.append(
             Content(
                 role="user",
