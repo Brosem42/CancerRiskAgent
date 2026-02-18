@@ -7,6 +7,20 @@ from typing import Any, Dict
 from src.inference.agent.vertex_client import get_model
 from src.inference.agent.tool_loop import run_tool_calling
 
+import json
+import re
+from typing import Any, Dict
+
+_CODE_FENCE_RE = re.compile(r"^```(?:json)?\s*|\s*```$", re.IGNORECASE)
+
+def _strip_code_fences(text: str) -> str:
+    """
+    Removes leading/trailing triple-backtick fences (``` or ```json).
+    """
+    if not text:
+        return text
+    return _CODE_FENCE_RE.sub("", text.strip()).strip()
+
 # query expansion + rewriting while keeping main context for base prompts 
 assessor_system_prompt = """
     Agent module type: You have inherited a persona profile module as your agentic architecture.
@@ -67,7 +81,9 @@ Return JSON only, no markdown.
         allowed_tools=["get_patient", "retrieve_guideline_evidence"],
         max_steps=6
     )
+    cleaned = _strip_code_fences(raw)
+
     try:
-        return json.loads(raw)
+        return json.loads(cleaned)
     except Exception as e:
-        raise RuntimeError(f"Agent did not return valid JSON. Raw Raw output:\n{raw}") from e
+        raise RuntimeError(f"Agent did not return valid JSON. Raw output:\n{raw}") from e
