@@ -33,7 +33,7 @@ GOOGLE_APPLICATION_CREDENTIALS = os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 
 # Load environment variables from chromaDB with persistence locally, and prevent unecessary calls to API--more cost-effective approach
 BASE_DIR = Path(__file__).resolve().parent
 
-DEFAULT_CHROMA_PATH = BASE_DIR / "chroma_db"
+DEFAULT_CHROMA_PATH = BASE_DIR /"chroma_db"
 # keep a persistent chroma to prevent unnecessary stores/silent create of new DB
 CHROMA_PATH = Path(os.getenv("CHROMA_PATH", str(DEFAULT_CHROMA_PATH))).resolve()
 
