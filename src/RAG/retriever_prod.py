@@ -33,16 +33,11 @@ GOOGLE_APPLICATION_CREDENTIALS = os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 
 # Load environment variables from chromaDB with persistence locally, and prevent unecessary calls to API--more cost-effective approach
 BASE_DIR = Path(__file__).resolve().parent
 
-DEFAULT_CHROMA_PATH = BASE_DIR /"chroma_db"
+DEFAULT_CHROMA_PATH = BASE_DIR / "chroma_db"
+
 # keep a persistent chroma to prevent unnecessary stores/silent create of new DB
 CHROMA_PATH = Path(os.getenv("CHROMA_PATH", str(DEFAULT_CHROMA_PATH))).resolve()
-
-if not CHROMA_PATH.exists():
-    raise RuntimeError(
-        f"Chroma DB folder not found at: {CHROMA_PATH}\n"
-        f"Tip: set CHROMA_PATH env var or ensure src/RAG/chroma_db is present."
-    )
-
+CHROMA_PATH.mkdir(parents=True, exist_ok=True)
 
 persistent_client = chromadb.PersistentClient(path=str(CHROMA_PATH))
 # Importing Gemini for embedding
@@ -81,7 +76,8 @@ retriever = vectorstore.as_retriever(
     }
 )
 
-def retrieve_docs(query: str, top_k: int = 8):
+#helper function to retrieve docs
+def retrieve_docs(query: str, top_k: int = 8) -> list[Document]:
     return vectorstore.max_marginal_relevance_search(
         query,
         k=top_k,
@@ -129,7 +125,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.0)
 
 def generated_attributed_response(question: str):
-    retrieved_docs = retriever.invoke(question)
+    retrieved_docs = retriever.invoke(question, top_k=8)
     sources_formatted  = format_sources_with_citations(retrieved_docs)
     attribution_chain = attribution_prompt | llm | StrOutputParser()
 
@@ -140,6 +136,9 @@ def generated_attributed_response(question: str):
     return response
 
 if __name__ == "__main__":
+    print("Testing retriever...")
+    print(f"CHROMA_PATH =", CHROMA_PATH)
+    print("collection count =", vectorstore._collection.count())
     question = "Based on this patient data provided, what type of referral is required for patient care?--data:'{\"patient_id\": \"PT-103\", \"name\": \"Robert Brown\", \"age\": \"45\", \"gender\": \"Male\", \"smoking_history\": \"Ex-Smoker\", \"symptoms\": [\"persistent cough\", \"shortness of breath\"], \"symptom_duration_days\": 28}'"
     response = generated_attributed_response(question)
     print(response)
