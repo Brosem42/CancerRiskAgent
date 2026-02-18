@@ -17,6 +17,7 @@ from .citations import format_sources_with_citations, infer_page_from_text
 
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 # Load environment variables from .env file first
 load_dotenv()
 
@@ -30,8 +31,20 @@ GOOGLE_APPLICATION_CREDENTIALS = os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 
 
 
 # Load environment variables from chromaDB with persistence locally, and prevent unecessary calls to API--more cost-effective approach
-persistent_client = chromadb.PersistentClient(path="./chroma_db")
+BASE_DIR = Path(__file__).resolve().parent
 
+DEFAULT_CHROMA_PATH = BASE_DIR / "chroma_db"
+# keep a persistent chroma to prevent unnecessary stores/silent create of new DB
+CHROMA_PATH = Path(os.getenv("CHROMA_PATH", str(DEFAULT_CHROMA_PATH))).resolve()
+
+if not CHROMA_PATH.exists():
+    raise RuntimeError(
+        f"Chroma DB folder not found at: {CHROMA_PATH}\n"
+        f"Tip: set CHROMA_PATH env var or ensure src/RAG/chroma_db is present."
+    )
+
+
+persistent_client = chromadb.PersistentClient(path=str(CHROMA_PATH))
 # Importing Gemini for embedding
 embeddings = GoogleGenerativeAIEmbeddings(model="gemini-embedding-001")
 
