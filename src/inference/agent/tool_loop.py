@@ -64,8 +64,8 @@ def run_tool_calling(
             contents=contents,
             tools=VERTEX_TOOLS,
             tool_config=tool_Config,
-            system_instructions=system_instructions
-        )
+            system_instruction=system_instructions
+)
 
         func_call = find_function_call(response)
         if not func_call:
