@@ -133,4 +133,7 @@ config = {"configurable": {"thread_id": "abc123"}}
 
 # test query
 from langchain_core.messages import HumanMessage
-input_messsages = [HumanMessage("What is the referral status for patient")]
+input_messsages = [HumanMessage("What is the typical referral for liver METS in Radiology?")]
+response = graph.invoke({"messages": input_messsages}, config=config)
+
+print(response["messages"][-1].content)
