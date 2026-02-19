@@ -133,7 +133,4 @@ memory = MemorySaver()
 graph = graph_builder.compile(checkpointer=memory)
 config = {"configurable": {"thread_id": "abc123"}}
 
-from IPython.display import Image, display
-display(Image(graph.get_graph().draw_mermaid_png()))
-
 
