@@ -8,8 +8,8 @@ from langchain_core.retrievers import BaseRetriever
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_text_splitters.character import RecursiveCharacterTextSplitter
 
-from scripts.document_loader import load_document 
-from scripts.embeddings import EMBEDDINGS
+from document_loader import load_document 
+from embeddings import EMBEDDINGS
 
 # setup our vector store for retriver
 VECTOR_STORE = InMemoryVectorStore(embedding=EMBEDDINGS)
@@ -59,6 +59,18 @@ class DocumentBaseRetriever(BaseRetriever):
                 except Exception as e:
                     print(f"Failed to load {file.name}: {e}")
                     continue
+                self.documents.extend(docs)
+                self.store_documents(docs)
+
+            def _get_relevant_documents(
+                    self, query: str, *, run_manager: CallbackManagerForRetrieverRun) -> List[Document]:
+                """
+                Sync integration for retriever.
+                """
+                if len(self.documents) == 0:
+                    return []
+                return VECTOR_STORE.max_marginal_relevance_search(query, k=self.k, fetch_k=20, lambda_mult=0.5)
+
 
              
 
