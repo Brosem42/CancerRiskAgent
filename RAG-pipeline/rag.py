@@ -103,7 +103,7 @@ def doc_finalizer(state: State):
     """
     if "issues_detected" in state and state["issues_detected"]:
         response = llm.invoke(
-            messages=[{
+            [{
                 "role": "user",
                 "content": (
                     f"Revise the following patient document to address these feedback points:{state['issues_report']}\n"
