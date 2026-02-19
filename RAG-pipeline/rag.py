@@ -4,13 +4,19 @@ from langchain_core.messages import AIMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph, END
-from langgraph.constants import END
 from typing_extensions import List, TypedDict
 from langgraph.graph.message import add_messages
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 #module imports
-from scripts.doc_retrieval import DocumentBaseRetriever
 from scripts.model import llm
+from scripts.doc_retrieval import DocumentBaseRetriever
+from scripts.document_loader import load_document 
+from scripts.embeddings import EMBEDDINGS
+
 
 # define our system_prompt
 system_prompt = (
