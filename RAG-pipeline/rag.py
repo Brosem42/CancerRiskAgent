@@ -117,3 +117,18 @@ def doc_finalizer(state: State):
     return {
         "messages": [AIMessage(state["answer"])]
     }
+
+# build our knowledge graph to passs to agent
+graph_builder = StateGraph(State).add_sequence(
+    [retrieve, generate, double_check, doc_finalizer])
+
+graph_builder.add_edge(START, "retrieve")
+graph_builder.add_edge("doc_finalizer", END)
+memory = MemorySaver()
+graph = graph_builder.compile(checkpointer=memory)
+config = {"configurable": {"thread_id": "abc123"}}
+
+from IPython.display import Image, display
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+
