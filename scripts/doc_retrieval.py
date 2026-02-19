@@ -9,7 +9,7 @@ from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_text_splitters.character import RecursiveCharacterTextSplitter
 
 from scripts.document_loader import load_document 
-from embeddings import EMBEDDINGS
+from scripts.embeddings import EMBEDDINGS
 
 # setup our vector store for retriver
 VECTOR_STORE = InMemoryVectorStore(embedding=EMBEDDINGS)
