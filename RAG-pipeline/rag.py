@@ -93,4 +93,27 @@ def double_check(state: State):
     }
 
 
+# final node to integrate feedback to produce finalized, compliant docs
+#feedback looping functions to mimic feedback loop for patient order placement or clinical decision workflow steps for patient care
+def doc_finalizer(state: State):
+    """
+    Finalize patient user query by integrating feedback.
+    """
+    if "issues_detected" in state and state["issues_detected"]:
+        response = llm.invoke(
+            messages=[{
+                "role": "user",
+                "content": (
+                    f"Revise the following patient document to address these feedback points:{state['issues_report']}\n"
+                    f"Original Document: {state['answer']}\n"
+                    f"Always return the full revised document, even if no changes are needed."
 
+                )
+            }]
+        )
+        return {
+            "messages": [AIMessage(response.content)]
+        }
+    return {
+        "messages": [AIMessage(state["answer"])]
+    }
