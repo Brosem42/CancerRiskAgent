@@ -57,7 +57,7 @@ def retrieve(state: State):
 def generate(state: State):
     docs_content = "\n\n".join(doc.page_content for doc in state["context"])
     messages = prompt.invoke(
-        {"question": state["messages"][-1].content, "content": docs_content}
+        {"question": state["messages"][-1].content, "context": docs_content}
     )
     response = llm.invoke(messages)
     print(response.content)
