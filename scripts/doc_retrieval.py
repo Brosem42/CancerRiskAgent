@@ -8,7 +8,7 @@ from langchain_core.retrievers import BaseRetriever
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_text_splitters.character import RecursiveCharacterTextSplitter
 
-from document_loader import load_document 
+from scripts.document_loader import load_document 
 from embeddings import EMBEDDINGS
 
 # setup our vector store for retriver
