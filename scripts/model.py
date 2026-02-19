@@ -11,6 +11,5 @@ llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-pro", 
     temperature=0,
     max_output_tokens=2048,
-    streaming=True
-    
+    streaming=True  
 )
