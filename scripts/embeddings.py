@@ -1,0 +1,22 @@
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_classic.embeddings import CacheBackedEmbeddings
+from langchain_classic.storage import LocalFileStore
+import hashlib
+import pathlib as Path
+import pathlib
+#add sha256 encoder to mimic live setting where data privacy is key--with proprietary PHI data
+def sha256_encoder(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+#create caching for my embeddings to lower costs 
+cache_dir = pathlib.Path.cwd() / "embedding_cache_folder"
+store = LocalFileStore("./cache/")
+
+underlying_embeddings = GoogleGenerativeAIEmbeddings(model="gemini-embedding-001")
+
+#prevent unecessary costs by caching my emdbeddings
+EMBEDDINGS = CacheBackedEmbeddings.from_bytes_store(
+    underlying_embeddings,
+    store,
+    key_encoder=sha256_encoder
+)
