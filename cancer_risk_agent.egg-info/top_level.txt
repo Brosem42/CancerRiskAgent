@@ -1,0 +1,4 @@
+RAG-pipeline
+data
+scripts
+src
