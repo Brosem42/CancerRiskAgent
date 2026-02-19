@@ -10,7 +10,7 @@ def sha256_encoder(text: str) -> str:
 
 #create caching for my embeddings to lower costs 
 cache_dir = pathlib.Path.cwd() / "embedding_cache_folder"
-store = LocalFileStore("./cache/")
+store = LocalFileStore(cache_dir)
 
 underlying_embeddings = GoogleGenerativeAIEmbeddings(model="gemini-embedding-001")
 
