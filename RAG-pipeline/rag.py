@@ -131,3 +131,6 @@ graph = graph_builder.compile(checkpointer=memory)
 config = {"configurable": {"thread_id": "abc123"}}
 
 
+# test query
+from langchain_core.messages import HumanMessage
+input_messsages = [HumanMessage("What is the referral status for patient")]
