@@ -22,7 +22,7 @@ def split_documents(docs: List[Document]) -> list[Document]:
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1024, chunk_overlap=256
     )
-    return text_splitter(docs)
+    return text_splitter.split_documents(docs)
 
 # def retriever from base--> creating BaseRetriever object to call
 class DocumentBaseRetriever(BaseRetriever):

@@ -49,7 +49,7 @@ class State(TypedDict):
 
 #start with retrieval
 def retrieve(state: State):
-    retrieved_docs = retriever.invoke(state["messsges"][-1].content)
+    retrieved_docs = retriever.invoke(state["messages"][-1].content)
     print(retrieved_docs)
     return {"context": retrieved_docs}
 
@@ -123,9 +123,6 @@ def doc_finalizer(state: State):
 # build our knowledge graph to passs to agent
 graph_builder = StateGraph(State).add_sequence(
     [retrieve, generate, double_check, doc_finalizer])
-
-graph_builder.add_edge(START, "retrieve")
-graph_builder.add_edge("doc_finalizer", END)
 memory = MemorySaver()
 graph = graph_builder.compile(checkpointer=memory)
 config = {"configurable": {"thread_id": "abc123"}}
