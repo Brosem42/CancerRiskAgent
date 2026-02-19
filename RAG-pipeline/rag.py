@@ -13,10 +13,9 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 #module imports
 from scripts.model import llm
-from scripts.doc_retrieval import DocumentBaseRetriever
 from scripts.document_loader import load_document 
 from scripts.embeddings import EMBEDDINGS
-
+from scripts.doc_retrieval import DocumentBaseRetriever
 
 # define our system_prompt
 system_prompt = (
