@@ -6,6 +6,7 @@ import pathlib as Path
 import pathlib
 from dotenv import load_dotenv
 #add sha256 encoder to mimic live setting where data privacy is key--with proprietary PHI data
+load_dotenv()
 def sha256_encoder(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
