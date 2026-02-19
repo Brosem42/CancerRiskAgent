@@ -56,7 +56,7 @@ with col2:
     #file upload
     uploaded_files = st.file_uploader(
         "Upload Patient order requisition or enter patient MRN number",
-        type=list(DocumentLoader.supported_extensions),
+        type=["pdf", "json"],
         accept_multiple_files=True
     )
     if uploaded_files:
