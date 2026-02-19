@@ -62,14 +62,14 @@ class DocumentBaseRetriever(BaseRetriever):
                 self.documents.extend(docs)
                 self.store_documents(docs)
 
-            def _get_relevant_documents(
-                    self, query: str, *, run_manager: CallbackManagerForRetrieverRun) -> List[Document]:
-                """
-                Sync integration for retriever.
-                """
-                if len(self.documents) == 0:
-                    return []
-                return VECTOR_STORE.max_marginal_relevance_search(query, k=self.k, fetch_k=20, lambda_mult=0.5)
+    def _get_relevant_documents(
+              self, query: str, *, run_manager: CallbackManagerForRetrieverRun) -> List[Document]:
+              """
+              Sync integration for retriever.
+              """
+              if len(self.documents) == 0:
+                return []
+              return VECTOR_STORE.max_marginal_relevance_search(query, k=self.k, fetch_k=20, lambda_mult=0.5)
 
 
              
