@@ -6,9 +6,6 @@ import pathlib as Path
 import pathlib
 from dotenv import load_dotenv
 #add sha256 encoder to mimic live setting where data privacy is key--with proprietary PHI data
-load_dotenv()
-def sha256_encoder(text: str) -> str:
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 load_dotenv()
 
@@ -21,6 +18,5 @@ underlying_embeddings = GoogleGenerativeAIEmbeddings(model="text-embedding-004")
 #prevent unecessary costs by caching my emdbeddings
 EMBEDDINGS = CacheBackedEmbeddings.from_bytes_store(
     underlying_embeddings,
-    store,
-    key_encoder=sha256_encoder
+    store
 )
