@@ -84,7 +84,6 @@ with col1:
         #store both messages
         st.session_state.chat_history.append({"role": "user", "content": user_message})
         st.session_state.chat_history.append({"role": "assistant", "content": response})
-        response = process_message(user_message)
 
 #column 2
 with col2:
