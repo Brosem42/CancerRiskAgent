@@ -3,6 +3,9 @@ import streamlit as st
 from langchain_core.messages import HumanMessage
 from ragPipeline.rag import retriever, graph, config
 from scripts.document_loader import DocumentLoader
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 FASTAPI_URL = "http://127.0.0.1:8002" 
 
