@@ -13,7 +13,7 @@ load_dotenv()
 cache_dir = pathlib.Path.cwd() / "embedding_cache_folder"
 store = LocalFileStore(cache_dir)
 
-underlying_embeddings = GoogleGenerativeAIEmbeddings(model="text-embedding-004")
+underlying_embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
 
 #prevent unecessary costs by caching my emdbeddings
 EMBEDDINGS = CacheBackedEmbeddings.from_bytes_store(
