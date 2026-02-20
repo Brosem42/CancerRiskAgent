@@ -1,1 +1,0 @@
-# POST /chat (+ history endpoints)

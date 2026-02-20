@@ -1,1 +1,0 @@
-#env var config (Pydantic BaseSettings)
