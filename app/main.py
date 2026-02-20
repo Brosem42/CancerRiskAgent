@@ -8,8 +8,11 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 import asyncio
 import json
 from streamlit import logger
+from app.routers import chat
+
 app = FastAPI()
 
+app.include_router(chat.router)
 # init with fastapi
 @app.post("/chat")
 
