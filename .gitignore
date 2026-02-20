@@ -1,2 +1,4 @@
 # py
-__pycache__/
+.__pycache__/
+.streamlit/secrets.toml
+
