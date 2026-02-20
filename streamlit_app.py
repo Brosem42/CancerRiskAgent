@@ -21,8 +21,6 @@ CHROMA_DATABASE = st.secrets["CHROMA_DATABASE"]
 
 FASTAPI_URL = st.secrets["FASTAPI_URL"]
 
-FASTAPI_URL = "http://127.0.0.1:8002" 
-
 st.set_page_config(page_title="Cancer Risk Agentic Hub", page_icon=":robot:", layout="wide")
 
 # init sesseion state for chat history
