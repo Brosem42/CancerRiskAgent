@@ -12,8 +12,18 @@ import shutil
 from streamlit import logger
 from app.routers import chat
 
+#adding CORS
+from fastapi.middleware.cors import CORSMiddleware
+
 from scripts.doc_retrieval import DocumentBaseRetriever
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
 retriever_instance = DocumentBaseRetriever()
 
 # temp directory
