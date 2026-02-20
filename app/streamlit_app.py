@@ -1,8 +1,10 @@
-# streamlit app for knowledge base
+import requests
 import streamlit as st
 from langchain_core.messages import HumanMessage
 from ragPipeline.rag import retriever, graph, config
 from scripts.document_loader import DocumentLoader
+
+FASTAPI_URL = "http://127.0.0.1:8002" 
 
 st.set_page_config(page_title="Cancer Risk Agentic Hub", page_icon=":robot:", layout="wide")
 
@@ -22,13 +24,20 @@ for message in st.session_state.chat_history:
 docs = retriever.add_uploaded_docs(st.session_state.uploaded_files)
 
 #how retriever process human message
-def process_message(message):
+def process_message(message, history):
     """
-    Assistant response.
+    Takes user message + hisotry, sends it to FastAPI and returns the reply.
     """
-    response = graph.invoke({"messages": HumanMessage(message)},
-                            config=config)
-    return response["messages"][-1].content
+    payload = {
+        "message": message,
+        "history": history
+    }
+    try:
+        response = requests.post(f"{FASTAPI_URL}/chat", json=payload)
+        response.raise_for_status()
+        return response.json()["reply"]
+    except Exception as e:
+        return f"Error connecting to backend: {e}"
 
 # this ignores the previous messages--TODO: change the prompt to provide access to previous messsages
 st.markdown("""
@@ -47,7 +56,14 @@ with col1:
         with st.chat_message("User"):
             st.markdown(user_message)
         #add user message
-        st.session_state.chat_history.append({"role": "user", "content": "user_message"})
+        response = process_message(user_message, st.session_state.chat_history)
+
+        with st.chat_message("Clinical AI assistant"):
+            st.markdown(response)
+
+        #store both messages
+        st.session_state.chat_history.append({"role": "user", "content": user_message})
+        st.session_state.chat_history.append({"role": "assistant", "content": response})
         response = process_message(user_message)
 
 #column 2
@@ -62,4 +78,7 @@ with col2:
     if uploaded_files:
         for file in uploaded_files:
             if file.name not in st.session_state.uploaded_files:
-                st.session_state.uploaded_files.append(file)
+                # send to fastapi
+                files = {"file": (file.name, file.getvalue(), file.type)}
+                requests.post(f"{FASTAPI_URL}/upload", files=files)
+                st.session_state.uploaded_files.append(file.name)
