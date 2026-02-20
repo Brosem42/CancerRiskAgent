@@ -1,6 +1,6 @@
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain.embeddings import CacheBackedEmbeddings
-from langchain_community.storage import LocalFileStore
+from langchain.storage import LocalFileStore
 import hashlib
 import pathlib as Path
 import pathlib
