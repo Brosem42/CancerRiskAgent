@@ -3,10 +3,23 @@ import sys
 import requests
 import streamlit as st
 from langchain_core.messages import HumanMessage
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
+os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+os.environ["CHROMA_API_KEY"] = st.secrets["CHROMA_API_KEY"]
+os.environ["CHROMA_TENANT"] = st.secrets["CHROMA_TENANT"]
+os.environ["CHROMA_DATABASE" ] = st.secrets["CHROMA_DATABASE"]
+os.environ["GOOGLE_CLOUD_LOCATION"] = st.secrets["GOOGLE_CLOUD_LOCATION"]
+os.environ["GOOGLE_CLOUD_PROJECT" ] = st.secrets["GOOGLE_CLOUD_PROJECT"]
+os.environ["GOOGLE_APPLICATION_CREDENTIALS" ] = st.secrets["GOOGLE_APPLICATION_CREDENTIALS"]
+os.environ["GCLOUD_PROJECT"] = st.secrets["GCLOUD_PROJECT"]
+
 from ragPipeline.rag import retriever, graph, config
 from scripts.document_loader import DocumentLoader
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+FASTAPI_URL = st.secrets["FASTAPI_URL"]
 
 FASTAPI_URL = "http://127.0.0.1:8002" 
 
