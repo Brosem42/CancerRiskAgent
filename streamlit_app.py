@@ -7,8 +7,17 @@ from langchain_core.messages import HumanMessage
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
-from ragPipeline.rag import DocumentBaseRetriever, graph, config
+from ragPipeline.rag import retriever, graph, config
 from scripts.document_loader import DocumentLoader
+
+GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
+GOOGLE_APPLICATION_CREDENTIALS = st.secrets["GOOGLE_APPLICATION_CREDENTIALS"]
+GOOGLE_CLOUD_PROJECT = st.secrets["GOOGLE_CLOUD_PROJECT"]
+GCLOUD_PROJECT = st.secrets["GCLOUD_PROJECT"]
+GOOGLE_CLOUD_LOCATION = st.secrets["GOOGLE_CLOUD_LOCATION"]
+CHROMA_API_KEY = st.secrets["CHROMA_API_KEY"]
+CHROMA_TENANT = st.secrets["CHROMA_TENANT"]
+CHROMA_DATABASE = st.secrets["CHROMA_DATABASE"]
 
 FASTAPI_URL = st.secrets["FASTAPI_URL"]
 
