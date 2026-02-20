@@ -7,7 +7,7 @@ from langchain_core.messages import HumanMessage
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
-from ragPipeline.rag import retriever, graph, config
+from ragPipeline.rag import DocumentBaseRetriever, graph, config
 from scripts.document_loader import DocumentLoader
 
 FASTAPI_URL = st.secrets["FASTAPI_URL"]
