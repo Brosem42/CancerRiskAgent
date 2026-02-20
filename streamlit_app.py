@@ -19,7 +19,12 @@ CHROMA_API_KEY = st.secrets["CHROMA_API_KEY"]
 CHROMA_TENANT = st.secrets["CHROMA_TENANT"]
 CHROMA_DATABASE = st.secrets["CHROMA_DATABASE"]
 
-FASTAPI_URL = st.secrets["FASTAPI_URL"]
+
+if "FASTAPI_URL" in st.secrets:
+    FASTAPI_URL = st.secrets["FASTAPI_URL"]
+else:
+    FASTAPI_URL = "http://127.0.0.1:8002"
+
 
 st.set_page_config(page_title="Cancer Risk Agentic Hub", page_icon=":robot:", layout="wide")
 
