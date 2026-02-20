@@ -7,7 +7,6 @@ from langchain_core.messages import HumanMessage
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
-os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 os.environ["CHROMA_API_KEY"] = st.secrets["CHROMA_API_KEY"]
 os.environ["CHROMA_TENANT"] = st.secrets["CHROMA_TENANT"]
 os.environ["CHROMA_DATABASE" ] = st.secrets["CHROMA_DATABASE"]
