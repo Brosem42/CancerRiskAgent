@@ -35,14 +35,11 @@ async def websocket_endpoint(websocket: WebSocket):
     #process messages
     try:
         while True:
-            user_data = await websocket.receive_text()
-            data = json.loads(user_data)
-            user_message = data.get("message", "")
-
-            async for chunk in llm.astream([HumanMessage(content=user_message)]):
-                if chunk.content:
-                    await websocket.send_json({"token": chunk.content})
-
+            data = await websocket.receive_text()
+            await websocket.send_text(f"Message received: {data}")
     except WebSocketDisconnect:
-        print("Client disconnected")
+            print("Client disconnected")
 
+@app.get("/")
+async def home():
+            return {"message": "API is online, go to test endpoints."}
