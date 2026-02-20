@@ -14,7 +14,7 @@ from app.routers import chat
 
 from scripts.doc_retrieval import DocumentBaseRetriever
 app = FastAPI()
-retriever_instance = DocumentBaseRetriever
+retriever_instance = DocumentBaseRetriever()
 
 # temp directory
 UPLOAD_DIR = "temp_uploads"
@@ -41,12 +41,12 @@ async def chat(request: Request):
     user_message = data.get("message", "")
 
     if not user_message:
-        return {"response": "No messages provided"}
+        return {"reply": "No messages provided"}
     
     #human message
     messages = [HumanMessage(content=user_message)]
     response = llm.invoke(messages)
-    return {"response": response.content}
+    return {"reply": response.content}
 
 # adding websockets
 @app.websocket("/ws")
