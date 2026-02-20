@@ -70,15 +70,15 @@ with col1:
 with col2:
     st.subheader("Patient Data Management Hub")
     #file upload
-    uploaded_files = st.file_uploader(
+    uploaded_files_uploader = st.file_uploader(
         "Upload Patient order requisition or enter patient MRN number",
         type=["pdf", "json"],
         accept_multiple_files=True
     )
-    if uploaded_files:
-        for file in uploaded_files:
-            if file.name not in st.session_state.uploaded_files:
+    if uploaded_files_uploader:
+        for file in uploaded_files_uploader:
+            if file.name not in [f.name for f in st.session_state.uploaded_files]:
                 # send to fastapi
                 files = {"file": (file.name, file.getvalue(), file.type)}
                 requests.post(f"{FASTAPI_URL}/upload", files=files)
-                st.session_state.uploaded_files.append(file.name)
+                st.session_state.uploaded_files.append(file)
