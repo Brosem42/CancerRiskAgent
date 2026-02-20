@@ -44,24 +44,20 @@ class DocumentBaseRetriever(BaseRetriever):
         splits = split_documents(docs)
         VECTOR_STORE.add_documents(splits)
     
-    def add_uploaded_docs(self, uploaded_files):
+    def add_uploaded_docs(self, file_paths: List[str]):
         """
-        Uploading files to vector store.
+        Add your uploaded file paths and files to vector store.
         """
-        docs = []
         with tempfile.TemporaryDirectory() as temp_dir:
-            for file in uploaded_files:
-                temp_filepath = os.path.join(temp_dir, file.name)
-                with open(temp_filepath, "wb") as f:
-                    f.write(file.getvalue())
+            for path in file_paths:
                 try:
-                    docs.extend(load_document(temp_filepath))
-                except Exception as e:
-                    print(f"Failed to load {file.name}: {e}")
-                    continue
-                self.documents.extend(docs)
-                self.store_documents(docs)
+                    new_docs = load_document(path)
 
+                    if new_docs:
+                        self.documents.extend(new_docs)
+                        self.store_documents(new_docs)
+                except Exception as e:
+                    print(f"Failed to load document at {path}: {e}")
     def _get_relevant_documents(
               self, query: str, *, run_manager: CallbackManagerForRetrieverRun) -> List[Document]:
               """
