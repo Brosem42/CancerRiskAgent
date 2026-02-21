@@ -11,11 +11,10 @@ from langchain_community.document_loaders.epub import UnstructuredEPubLoader
 from langchain_community.document_loaders.pdf import PyMuPDFLoader, PyPDFLoader
 from langchain_community.document_loaders.text import TextLoader
 from langchain_community.document_loaders.word_document import UnstructuredWordDocumentLoader
-from streamlit.logger import get_logger
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-
-logging.basicConfig(encoding="utf-8", level=logging.INFO)
-LOGGER = get_logger(__name__)
+#migrating to gradio
+logger_log = logging.getLogger(__name__) 
+logging.basicConfig(level=logging.INFO)
 
 #document reader
 class EpubReader(UnstructuredEPubLoader):
@@ -39,11 +38,11 @@ class DocumentLoader(object):
         ".doc": UnstructuredWordDocumentLoader
     }
 #load document fucntion
-def load_document(temp_filepath: str) -> list[Document]:
+def load_document(temp_filepath: str) -> List[Document]:
     """
     Load a file and return a list of documents.
     """
-    ext = pathlib.Path(temp_filepath).suffix
+    ext = pathlib.Path(temp_filepath).suffix.lower()
     loader = DocumentLoader.supported_extension.get(ext)
     if not loader:
         raise DocumentLoaderException(
@@ -51,7 +50,8 @@ def load_document(temp_filepath: str) -> list[Document]:
         )
     loaded = loader(temp_filepath)
     docs = loaded.load()
-    logging.info(docs)
+
+    logger_log.info("Loading docs..", len(docs), temp_filepath)
     return docs
 
 
@@ -64,5 +64,3 @@ def split_documents(docs: List[Document]) -> List[Document]:
         chunk_size=1024, chunk_overlap=256
     )
     return text_splitter.split_documents(docs)
-
-# Obtain the corpus of chunks
