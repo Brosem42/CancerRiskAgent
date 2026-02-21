@@ -15,5 +15,5 @@ llm = ChatGoogleGenerativeAI(
     google_api_key=api_key,
     temperature=0,
     max_output_tokens=2048,
-    streaming=True  
+    streaming=False  
 )
