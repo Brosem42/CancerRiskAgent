@@ -11,15 +11,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 #create caching for my embeddings to lower costs 
-cache_dir = pathlib.Path.cwd() / "embedding_cache_folder"
-store = LocalFileStore(cache_dir)
+cache_dir = pathlib.Path("/tmp/embedding_cache_folder")
+cache_dir.mkdir(parents=True, exist_ok=True)
+store = LocalFileStore(str(cache_dir))
 
 underlying_embeddings = GoogleGenerativeAIEmbeddings(
-    model="text-embedding-004", 
+    model="models/text-embedding-004", 
     google_api_key=os.getenv("GOOGLE_API_KEY")
 )
 #prevent unecessary costs by caching my emdbeddings
 EMBEDDINGS = CacheBackedEmbeddings.from_bytes_store(
     underlying_embeddings,
-    store
+    store,
+    namespace=underlying_embeddings.model 
 )
