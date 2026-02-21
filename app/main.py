@@ -51,4 +51,4 @@ async def home():
      return {"message": "API is online."}
 
 # add routers
-app.include_router(chat.router)
+app.include_router(chat_router.router)
