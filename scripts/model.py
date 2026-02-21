@@ -9,8 +9,8 @@ api_key = os.getenv("GOOGLE_API_KEY")
 
 # invoke my model in google
 llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-pro",
-    GOOGLE_API_KEY=api_key,
+    model="gemini-1.5-flash",
+    google_api_key=os.getenv("GOOGLE_API_KEY"),
     temperature=0,
     max_output_tokens=2048,
     streaming=True  
