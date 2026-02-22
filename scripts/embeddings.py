@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 #create caching for my embeddings to lower costs 
-cache_dir = pathlib.Path("/tmp/embedding_cache_folder")
+cache_dir = pathlib.Path("cache_uploads/embedding_cache_folder")
 cache_dir.mkdir(parents=True, exist_ok=True)
 store = LocalFileStore(str(cache_dir))
 
