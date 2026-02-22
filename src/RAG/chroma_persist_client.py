@@ -1,1 +1,0 @@
-# open chroma persisted db

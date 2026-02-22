@@ -16,7 +16,7 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     reply: str
-@router.post("/chat", response_model=ChatResponse)
+@router.post("app/routers/chat.py", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
     try:
         #prepare messages including history for content
