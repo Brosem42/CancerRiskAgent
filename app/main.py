@@ -32,9 +32,9 @@ chat_router.LLM = llm
 
 
 # temp directory
-UPLOAD_DIR = "temp_uploads"
+UPLOAD_DIR = "app/temp_uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-@app.post("/upload")
+@app.post("/temp_upload")
 async def upload_file(file: UploadFile = File(...)):
     try:
         file_path = os.path.join(UPLOAD_DIR, file.filename)
