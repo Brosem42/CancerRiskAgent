@@ -6,7 +6,6 @@ from typing import List, Optional
 
 from scripts.model import llm
 from langchain_core.messages import HumanMessage, AIMessage
-
 router = APIRouter()
 
 #request
