@@ -6,6 +6,10 @@ from typing import List
 from langchain_core.documents import Document
 from langchain_community.document_loaders.pdf import UnstructuredPDFLoader, PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.vectorstores import InMemoryVectorStore
+from scripts.embeddings import EMBEDDINGS
+from typing import Any
+
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -112,6 +116,17 @@ def load_and_chunk_pdf(file_path: str) -> List[Document]:
     logger.info("Created %d chunks from %s", len(chunks), file_path)
     return chunks
 
+# setup our vector store for retriver
+VECTOR_STORE = InMemoryVectorStore(embedding=EMBEDDINGS)
+
+def store_documents(docs: List[Document]) -> None:
+    """
+    Adding my docs to vector store.
+    """
+    chunks = split_documents(docs)
+    VECTOR_STORE.add_documents(chunks)
+
+# load test for chunk tuning
 if __name__ == "__main__":
     file_path = "/Users/briannamitchell/Downloads/CancerRiskAgent/data/NG12_pdf.pdf"
 
