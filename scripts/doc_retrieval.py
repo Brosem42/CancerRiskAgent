@@ -11,11 +11,36 @@ from langchain_text_splitters.character import RecursiveCharacterTextSplitter
 
 #module imports
 from scripts.embeddings import EMBEDDINGS
-from document_loader import VECTOR_STORE, store_documents
+from scripts.document_loader import VECTOR_STORE, split_documents
+
+def store_documents(docs: List[Document]) -> List[Document]:
+  """
+  Adding my docs to vector store.
+  """
+  chunks = split_documents(docs)
+  for i, d in enumerate(chunks):
+       d.metadata = {**(d.metadata or {}), "chunk_id": str(i)}
+  VECTOR_STORE.add_documents(chunks)
+  return chunks
+
+
+docs = [Document(page_content=text, metadata={"id": str(i)}) for i, text in enumerate()]
+#dense retriever
+dense_retriever = VECTOR_STORE.as_retriever(search_kwargs={"k": 10})
+#sparse retriever
+sparse_retriever = BM25Retriever.from_documents(documents=documents, k=10)
+
+
+
+
 # def retriever from base--> creating BaseRetriever object to call
-dense_retriever = VECTOR_STORE.as_retriever(
-     search_kwargs={"k": 10}
-)
+dense_retriever = VECTOR_STORE.as_retriever(search_kwargs={"k": 10})
+
+
+
+
+#sparse--lexical vector for keyword search
+sparse_retriever = BM25Retriever.from_documents(documents=Docdocsuments, k=10)
 
     def _get_relevant_documents(
               self, query: str, *, run_manager: CallbackManagerForRetrieverRun) -> List[Document]:
